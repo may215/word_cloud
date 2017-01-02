@@ -241,6 +241,11 @@ class WordCloud(object):
         is removed and its counts are added to the version without
         trailing 's' -- unless the word ends with 'ss'.
 
+    words_list: list, default=None
+        List of words/frequencies provided instead of analysing custom text.
+
+        .. versionadded: 2.0
+
     Attributes
     ----------
     ``words_`` : dict of string to float
@@ -269,7 +274,7 @@ class WordCloud(object):
                  stopwords=None, random_state=None, background_color='black',
                  max_font_size=None, font_step=1, mode="RGB",
                  relative_scaling=.5, regexp=None, collocations=True,
-                 colormap=None, normalize_plurals=True):
+                 colormap=None, normalize_plurals=True, words_list=None):
         if font_path is None:
             font_path = FONT_PATH
         if color_func is None and colormap is None:
@@ -310,6 +315,7 @@ class WordCloud(object):
                           " it had no effect. Look into relative_scaling.",
                           DeprecationWarning)
         self.normalize_plurals = normalize_plurals
+        self.words_list = words_list
 
     def fit_words(self, frequencies):
         """Create a word_cloud from words and frequencies.
@@ -534,8 +540,9 @@ class WordCloud(object):
         -------
         self
         """
-        words = self.process_text(text)
-        self.generate_from_frequencies(words)
+        if self.words_list is None:
+            self.words_list = self.process_text(text)
+        self.generate_from_frequencies(self.words_list)
         return self
 
     def generate(self, text):
